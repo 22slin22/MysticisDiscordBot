@@ -16,7 +16,7 @@ def link_discord_to_brawl_id(discord_id, brawl_id):
     with open(discord_to_brawl_id_file, 'r+') as brawl_ids:
         ids = json.load(brawl_ids)
         ids[str(discord_id)] = brawl_id
-        json.dump(brawl_ids, ids)
+        json.dump(ids, brawl_ids)
 
 
 def get_player_stats_by_brawl_id(brawl_id):
