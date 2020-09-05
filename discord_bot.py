@@ -1,6 +1,7 @@
 import discord
 import configparser
 from data_handler import get_player_ranked_by_discord_id, link_discord_to_brawl_id
+from brawlhalla import BrawlhallaDataUpdater
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -8,6 +9,9 @@ config.read('config.ini')
 token = config["Discord"]["token"]
 
 client = discord.Client()
+
+brawlhalla_data_updater = BrawlhallaDataUpdater()
+brawlhalla_data_updater.start()
 
 
 @client.event
