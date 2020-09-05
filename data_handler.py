@@ -2,7 +2,7 @@ import json
 
 
 player_stats_file_name = "data/players/{}_stats.json"
-player_ranked_file_name = "data/players/{}_stats.json"
+player_ranked_file_name = "data/players/{}_ranked.json"
 
 
 def get_brawl_id_by_discord_id(discord_id):
