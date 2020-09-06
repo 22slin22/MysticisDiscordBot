@@ -7,15 +7,13 @@ from discord.utils import get
 from data_handler import get_player_ranked_by_discord_id, link_discord_to_brawl_id
 from brawlhalla import BrawlhallaDataUpdater
 
+
 config = configparser.ConfigParser()
 config.read('config.ini')
-
 token = config["Discord"]["token"]
 
 client = discord.Client()
 
-brawlhalla_data_updater = BrawlhallaDataUpdater()
-brawlhalla_data_updater.start()
 
 @client.event
 async def on_ready():
@@ -39,19 +37,22 @@ async def on_message(message):
 
     if message.content == '!rank':
         discord_id = message.author.id
-        get_tier = get_player_ranked_by_discord_id(discord_id)['tier']
+        player_ranked_data = get_player_ranked_by_discord_id(discord_id)
+        get_tier = player_ranked_data['tier']
         tier = get_tier.split(" ")[0]
         rank_role = get(message.author.guild.roles, name=tier)
-        name = get_player_ranked_by_discord_id(discord_id)['name']
-        region = get_player_ranked_by_discord_id(discord_id)['region']
-        rating = get_player_ranked_by_discord_id(discord_id)['rating']
-        peak_rating = get_player_ranked_by_discord_id(discord_id)['peak_rating']
-        wins = get_player_ranked_by_discord_id(discord_id)['wins']
-        games = get_player_ranked_by_discord_id(discord_id)['games']
+
+        name = player_ranked_data['name']
+        region = player_ranked_data['region']
+        rating = player_ranked_data['rating']
+        peak_rating = player_ranked_data['peak_rating']
+        wins = player_ranked_data['wins']
+        games = player_ranked_data['games']
         losses = games - wins
-        win_perecentage = wins / (wins + losses) * 100
-        global_rank = get_player_ranked_by_discord_id(discord_id)['global_rank']
-        rounded_win_percentage = round(win_perecentage)
+        win_percentage = wins / (wins + losses) * 100
+        global_rank = player_ranked_data['global_rank']
+        rounded_win_percentage = round(win_percentage)
+
         await message.author.add_roles(rank_role)
         await message.channel.send('```Player Data'
                                    '\n\nName\t\t\t\t\t\t\t\tRegion\n'
@@ -68,4 +69,10 @@ async def on_message(message):
     if message.content == "!test":
         discord_id = message.author.id
         await message.channel.send(get_player_ranked_by_discord_id(discord_id)['tier'])
-client.run(token)
+
+
+if __name__ == '__main__':
+    brawlhalla_data_updater = BrawlhallaDataUpdater()
+    brawlhalla_data_updater.start()
+    
+    client.run(token)
