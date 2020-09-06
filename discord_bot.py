@@ -1,7 +1,6 @@
 import configparser
 
 import discord
-from discord import Embed
 from discord.utils import get
 
 from data_handler import get_player_ranked_by_discord_id, link_discord_to_brawl_id
@@ -15,10 +14,19 @@ token = config["Discord"]["token"]
 client = discord.Client()
 
 
+unverified = 'unverified'
+verified = 'verified'
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
+
+@client.event
+async def on_member_join(member):
+    unverified_role = get(member.guild.roles, name=unverified)
+    await member.add_roles(unverified_role)
+    print(f"{member} was given {unverified}")
 
 @client.event
 async def on_message(message):
@@ -26,14 +34,18 @@ async def on_message(message):
         return
 
     if message.content == '!verify':
-        await message.author.send('Hello ' + str(message.author) + ' ! \nTo get verified you need to post your Brawlhalla ID in here like that. \n'
+        await message.channel.send('Hello ' + str(message.author) + ' ! \nTo get verified you need to post your Brawlhalla ID in here like that. \n'
                                                                    '```BrawlhallaID: "your ID"```')
 
     if message.content.startswith('BrawlhallaID: '):
         brawl_id = message.content.split(" ")[1]
         discord_id = message.author.id
         link_discord_to_brawl_id(discord_id, brawl_id)
-        await message.channel.send('The verification was successful!')
+        verified_role = get(message.author.guild.roles, name=verified)
+        unverified_role = get(message.author.guild.roles, name=unverified)
+        await message.author.remove_roles(unverified_role)
+        await message.author.add_roles(verified_role)
+        await message.channel.send('```The verification was successful!\nTo get your rank assigned to your Account wait about 15 Minutes and then type !rank.```')
 
     if message.content == '!rank':
         discord_id = message.author.id
@@ -74,5 +86,5 @@ async def on_message(message):
 if __name__ == '__main__':
     brawlhalla_data_updater = BrawlhallaDataUpdater()
     brawlhalla_data_updater.start()
-    
+
     client.run(token)
