@@ -47,8 +47,17 @@ async def on_message(message):
         await message.author.add_roles(verified_role)
         await message.channel.send('```The verification was successful!\nTo get your rank assigned to your Account wait about 15 Minutes and then type !rank.```')
 
-    if message.content == '!rank':
-        discord_id = message.author.id
+    if message.content.startswith('!rank'):
+        cmd = message.content.split()
+        if len(cmd) == 1:
+            discord_id = message.author.id
+        elif cmd[1].startswith('<@!') and cmd[1].endswith('>'):
+            # The user mentioned somebody
+            discord_id = cmd[1][3:-1]
+        else:
+            await message.channel.send('Sorry, {} is not a valid user. Use either a mention (!rank @username) or just !rank to get your own ranked info.'.format(cmd[1]))
+            return
+
         player_ranked_data = get_player_ranked_by_discord_id(discord_id)
         get_tier = player_ranked_data['tier']
         tier = get_tier.split(" ")[0]
