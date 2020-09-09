@@ -33,21 +33,27 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content == '!verify':
-        await message.channel.send('Hello ' + str(message.author) + ' ! \nTo get verified you need to post your Brawlhalla ID in here like that. \n'
-                                                                   '```BrawlhallaID: "your ID"```')
+    if message.content.startswith('!verify'):
+        cmd = message.content.split()
+        if len(cmd) == 1:
+            await message.channel.send('To get verified you need to post your Brawlhalla ID in here like that. \n'
+                                                                   '```!verify <your_brawlhalla_id>```')
+        else:
+            try:
+                brawl_id = int(cmd[1])
+            except ValueError:
+                await message.channel.send("Sorry, {} is not a valid id".format(cmd[1]))
+                return
 
-    if message.content.startswith('BrawlhallaID: '):
-        brawl_id = message.content.split(" ")[1]
-        discord_id = message.author.id
-        link_discord_to_brawl_id(discord_id, brawl_id)
-        verified_role = get(message.author.guild.roles, name=verified)
-        unverified_role = get(message.author.guild.roles, name=unverified)
-        if unverified_role is not None:
-            await message.author.remove_roles(unverified_role)
-        if verified_role is not None:
-            await message.author.add_roles(verified_role)
-        await message.channel.send('```The verification was successful!\nTo get your rank assigned to your Account wait about 15 Minutes and then type !rank.```')
+            discord_id = message.author.id
+            link_discord_to_brawl_id(discord_id, brawl_id)
+            verified_role = get(message.author.guild.roles, name=verified)
+            unverified_role = get(message.author.guild.roles, name=unverified)
+            if unverified_role is not None:
+                await message.author.remove_roles(unverified_role)
+            if verified_role is not None:
+                await message.author.add_roles(verified_role)
+            await message.channel.send('```The verification was successful!\nTo get your rank assigned to your Account wait about 15 Minutes and then type !rank.```')
 
     if message.content.startswith('!rank'):
         cmd = message.content.split()
