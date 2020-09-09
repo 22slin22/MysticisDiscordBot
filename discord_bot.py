@@ -43,8 +43,10 @@ async def on_message(message):
         link_discord_to_brawl_id(discord_id, brawl_id)
         verified_role = get(message.author.guild.roles, name=verified)
         unverified_role = get(message.author.guild.roles, name=unverified)
-        await message.author.remove_roles(unverified_role)
-        await message.author.add_roles(verified_role)
+        if unverified_role is not None:
+            await message.author.remove_roles(unverified_role)
+        if verified_role is not None:
+            await message.author.add_roles(verified_role)
         await message.channel.send('```The verification was successful!\nTo get your rank assigned to your Account wait about 15 Minutes and then type !rank.```')
 
     if message.content.startswith('!rank'):
@@ -59,9 +61,15 @@ async def on_message(message):
             return
 
         player_ranked_data = get_player_ranked_by_discord_id(discord_id)
+        if player_ranked_data is None:
+            await message.channel.send("Sorry, I don't have your ranked data yet. Come back in a few minutes.")
+            return
+
         get_tier = player_ranked_data['tier']
         tier = get_tier.split(" ")[0]
         rank_role = get(message.author.guild.roles, name=tier)
+        if rank_role is not None:
+            await message.author.add_roles(rank_role)
 
         name = player_ranked_data['name']
         region = player_ranked_data['region']
@@ -74,7 +82,6 @@ async def on_message(message):
         global_rank = player_ranked_data['global_rank']
         rounded_win_percentage = round(win_percentage)
 
-        await message.author.add_roles(rank_role)
         await message.channel.send('```Player Data'
                                    '\n\nName\t\t\t\t\t\t\t\tRegion\n'
                                    + str(name) + '\t\t\t\t' + str(region) + '\n\n'
