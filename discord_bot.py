@@ -1,4 +1,5 @@
 import configparser
+import time
 
 import discord
 from discord.utils import get
@@ -25,8 +26,19 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     unverified_role = get(member.guild.roles, name=unverified)
-    await member.add_roles(unverified_role)
-    print(f"{member} was given {unverified}")
+    if unverified_role is not None:
+        await member.add_roles(unverified_role)
+
+    time.sleep(5)
+    verified_channel_id = int(config["Discord"]["verify_channel"])
+    verified_channel = member.guild.get_channel(verified_channel_id)
+    print(verified_channel_id)
+    print(verified_channel)
+    if verified_channel is not None:
+        await verified_channel.send("Hello {}.\n"
+                                    "Welcome to the Mysticis Server\n"
+                                    "To get verified use ```!verify <your-brawlhalla-id>```".format(member.mention))
+
 
 @client.event
 async def on_message(message):
