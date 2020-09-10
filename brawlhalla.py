@@ -26,7 +26,7 @@ class BrawlhallaDataUpdater(threading.Thread):
                 time.sleep(0.1)
             self.ids_to_update = self.ids_to_update[90:]
 
-            time.sleep(1*60)
+            time.sleep(15*60)
 
 
 def get_player_stats(brawl_id):
