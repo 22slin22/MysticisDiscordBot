@@ -4,7 +4,7 @@ import time
 import discord
 from discord.utils import get
 
-from data_handler import get_player_ranked_by_discord_id, get_player_stats_by_discord_id, link_discord_to_brawl_id
+from data_handler import *
 from brawlhalla import BrawlhallaDataUpdater
 
 config = configparser.ConfigParser()
@@ -137,7 +137,32 @@ async def on_message(message):
                                           "Monthly xp gain: "+str(monthly_xp)+"/7000\n"
                                           "Xp overall: "+str(xp_overall)+"\n```")
 
-            # await mysticis_channel.send("Hi")
+    if message.content.startswith("!brawldb"):
+        cmd = message.content.split()
+        if len(cmd) == 1:
+            discord_id = message.author.id
+        else:
+            if cmd[1].startswith('<@!') and cmd[1].endswith('>'):
+                # The user mentioned somebody
+                discord_id = cmd[1][3:-1]
+            else:
+                discord_id = cmd[1]
+            try:
+                discord_id = int(discord_id)
+            except ValueError:
+                await message.channel.send("Sorry, {} is not a valid mention or a user id!".format(discord_id))
+                return
+
+        brawl_id = get_brawl_id_by_discord_id(discord_id)
+        if brawl_id is None:
+            await message.channel.send("Sorry, <@!{}> is not yet verified!".format(discord_id))
+            return
+        await message.channel.send("https://brawldb.com/player/stats/{}".format(brawl_id))
+
+
+    if message.content == "!test":
+        discord_id = message.author.id
+        await message.channel.send(get_player_ranked_by_discord_id(discord_id)['tier'])
 
 if __name__ == '__main__':
     brawlhalla_data_updater = BrawlhallaDataUpdater()

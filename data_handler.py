@@ -9,7 +9,7 @@ player_ranked_file_name = "data/players/{}_ranked.json"
 def get_brawl_id_by_discord_id(discord_id):
     with open(discord_to_brawl_id_file) as brawl_ids:
         ids = json.load(brawl_ids)
-        return ids[str(discord_id)]
+        return ids.get(str(discord_id), None)
 
 
 def link_discord_to_brawl_id(discord_id, brawl_id):
