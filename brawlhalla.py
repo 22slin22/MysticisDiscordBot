@@ -9,12 +9,12 @@ config.read('config.ini')
 api_key = config["Brawlhalla"]["api_key"]
 
 
-class BrawlhallaDataUpdater(threading.Thread):
+class BrawlhallaDataUpdater:
     def __init__(self):
-        super().__init__(daemon=True)
         self.ids_to_update = []
 
     def run(self):
+        print("Brawlhalla data updater started")
         while True:
             to_update = 90
             if len(self.ids_to_update) < 90:
@@ -50,4 +50,4 @@ def update_player_data(brawl_id):
 
 if __name__ == '__main__':
     brawlhalla_data_updater = BrawlhallaDataUpdater()
-    brawlhalla_data_updater.start()
+    brawlhalla_data_updater.run()
