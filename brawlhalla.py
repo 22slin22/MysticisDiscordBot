@@ -46,3 +46,8 @@ def get_player_ranked(brawl_id):
 def update_player_data(brawl_id):
     set_player_stats(brawl_id, get_player_stats(brawl_id))
     set_player_ranked(brawl_id, get_player_ranked(brawl_id))
+
+
+if __name__ == '__main__':
+    brawlhalla_data_updater = BrawlhallaDataUpdater()
+    brawlhalla_data_updater.start()

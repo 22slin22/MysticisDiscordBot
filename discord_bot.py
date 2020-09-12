@@ -5,7 +5,6 @@ import discord
 from discord.utils import get
 
 from data_handler import *
-from brawlhalla import BrawlhallaDataUpdater
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -165,7 +164,4 @@ async def on_message(message):
         await message.channel.send(get_player_ranked_by_discord_id(discord_id)['tier'])
 
 if __name__ == '__main__':
-    brawlhalla_data_updater = BrawlhallaDataUpdater()
-    brawlhalla_data_updater.start()
-
     client.run(token)
